@@ -27,6 +27,11 @@ export function Header() {
             Cart
           </Link>
         </ChakraLink>
+        <ChakraLink asChild>
+          <Link className="text-md" href="/order">
+            Order
+          </Link>
+        </ChakraLink>
       </nav>
       <div className="flex justify-end items-center gap-x-4 w-full">
         <SearchProduct />
