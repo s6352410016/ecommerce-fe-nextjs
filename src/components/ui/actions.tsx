@@ -64,7 +64,7 @@ export function Actions() {
         setAuthType("signIn");
         toaster.create({
           type: "success",
-          title: "Account created successfully",
+          title: "account created successfully",
         });
         return;
       }
@@ -77,7 +77,7 @@ export function Actions() {
       });
       toaster.create({
         type: "success",
-        title: "Signed in successfully",
+        title: "signin successfully",
       });
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -89,18 +89,20 @@ export function Actions() {
     }
   };
 
-  const loginWithGoogle = () => {
-    const googleLoginUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/auth/google`;
-    const width = 500,
-      height = 600;
+  const handleSocialSignIn = (type: "google" | "github") => {
+    const width = 500;
+    const height = 600;
     const left = (screen.width - width) / 2;
     const top = (screen.height - height) / 2;
+    const authUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/auth/${type}`;
 
-    return window.open(
-      googleLoginUrl,
-      "Google Login",
+    window.open(
+      authUrl,
+      `${type} sign in`,
       `width=${width}, height=${height}, top=${top}, left=${left}`
     );
+
+    setAuthType("signIn");
   };
 
   const handleMenuSelect = (value: string) => {
@@ -141,10 +143,43 @@ export function Actions() {
   useEffect(() => {
     handleResetSignUpFields();
 
-    if(authType === "signInGoogle") {
-      loginWithGoogle();
+    if (authType === "signInGoogle") {
+      handleSocialSignIn("google");
+    } else if (authType === "signInGitHub") {
+      handleSocialSignIn("github");
     }
   }, [authType]);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.status === "success") {
+        setOpenAuthModal(false);
+        reset({
+          email: "",
+          password: "",
+        });
+        toaster.create({
+          type: "success",
+          title: event.data.message,
+        });
+      }else if(event.data.status === "error"){
+        reset({
+          email: "",
+          password: "",
+        });
+        toaster.create({
+          type: "error",
+          title: event.data.message,
+        });
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
 
   return (
     <>
