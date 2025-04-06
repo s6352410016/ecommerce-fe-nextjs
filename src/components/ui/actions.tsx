@@ -23,18 +23,27 @@ import { z } from "zod";
 import { SignUpFields, SignInFields } from "@/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Axios } from "@/libs/axios";
-import { Toaster, toaster } from "@/components/ui/toaster"
+import { Toaster, toaster } from "@/components/ui/toaster";
 import axios from "axios";
 
 export function Actions() {
   const router = useRouter();
 
   const [openAuthModal, setOpenAuthModal] = useState(false);
-  const [authType, setAuthType] = useState<"signIn" | "signUp">("signIn");
+  const [authType, setAuthType] = useState<
+    "signIn" | "signUp" | "signInGoogle" | "signInGitHub"
+  >("signIn");
 
   const schema = authType === "signIn" ? SignInFields : SignUpFields;
   type SignUpSchema = z.infer<typeof SignUpFields>;
   type SignInSchema = z.infer<typeof SignInFields>;
+
+  const authTypeText =
+    authType === "signIn" ||
+    authType === "signInGoogle" ||
+    authType === "signInGitHub"
+      ? "sign in"
+      : "sign up";
 
   const {
     register,
@@ -46,20 +55,12 @@ export function Actions() {
     shouldFocusError: false,
   });
 
-  const onSubmit = async (
-    fields: z.infer<typeof schema>
-  ) => {
-    try{
-      if(authType === "signUp"){
+  const onSubmit = async (fields: z.infer<typeof schema>) => {
+    try {
+      if (authType === "signUp") {
         await Axios.post("api/auth/signup", fields);
         setOpenAuthModal(false);
-        reset({
-          name: "",
-          email: "",
-          password: "",
-          phone: "",
-          address: "",
-        });
+        handleResetSignUpFields();
         setAuthType("signIn");
         toaster.create({
           type: "success",
@@ -78,14 +79,28 @@ export function Actions() {
         type: "success",
         title: "Signed in successfully",
       });
-    }catch(error){
-      if(axios.isAxiosError(error)){
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
         toaster.create({
           type: "error",
           title: error.response?.data?.message || "Something went wrong",
         });
       }
     }
+  };
+
+  const loginWithGoogle = () => {
+    const googleLoginUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/auth/google`;
+    const width = 500,
+      height = 600;
+    const left = (screen.width - width) / 2;
+    const top = (screen.height - height) / 2;
+
+    return window.open(
+      googleLoginUrl,
+      "Google Login",
+      `width=${width}, height=${height}, top=${top}, left=${left}`
+    );
   };
 
   const handleMenuSelect = (value: string) => {
@@ -105,21 +120,15 @@ export function Actions() {
   };
 
   const handleCloseDialog = async (open: boolean) => {
-    setOpenAuthModal(open);  
+    setOpenAuthModal(open);
     setAuthType("signIn");
 
-    if(!open){
-      reset({
-        name: "",
-        email: "",
-        password: "",
-        phone: "",
-        address: "",
-      });
+    if (!open) {
+      handleResetSignUpFields();
     }
-  }  
+  };
 
-  useEffect(() => {
+  const handleResetSignUpFields = () => {
     reset({
       name: "",
       email: "",
@@ -127,6 +136,14 @@ export function Actions() {
       phone: "",
       address: "",
     });
+  };
+
+  useEffect(() => {
+    handleResetSignUpFields();
+
+    if(authType === "signInGoogle") {
+      loginWithGoogle();
+    }
   }, [authType]);
 
   return (
@@ -163,7 +180,7 @@ export function Actions() {
               <Dialog.Content>
                 <Dialog.Header>
                   <Heading textAlign="center" width="full" size="2xl">
-                    {authType === "signIn" ? "sign in" : "sign up"}
+                    {authTypeText}
                   </Heading>
                 </Dialog.Header>
                 <Dialog.CloseTrigger asChild>
@@ -174,11 +191,16 @@ export function Actions() {
                     <Fieldset.Root>
                       <Fieldset.Content>
                         {authType === "signUp" && (
-                          <Field.Root invalid={!!(errors as unknown as SignUpSchema).name}>
+                          <Field.Root
+                            invalid={!!(errors as unknown as SignUpSchema).name}
+                          >
                             <Field.Label fontSize="md">name:</Field.Label>
                             <Input {...register("name")} name="name" />
                             <Field.ErrorText>
-                              {(errors as FieldErrors<SignUpSchema>).name?.message}
+                              {
+                                (errors as FieldErrors<SignUpSchema>).name
+                                  ?.message
+                              }
                             </Field.ErrorText>
                           </Field.Root>
                         )}
@@ -198,36 +220,58 @@ export function Actions() {
                         </Field.Root>
                         {authType === "signUp" && (
                           <>
-                            <Field.Root invalid={!!(errors as unknown as SignUpSchema).phone}>
+                            <Field.Root
+                              invalid={
+                                !!(errors as unknown as SignUpSchema).phone
+                              }
+                            >
                               <Field.Label fontSize="md">phone:</Field.Label>
                               <Input {...register("phone")} name="phone" />
                               <Field.ErrorText>
-                                {(errors as FieldErrors<SignUpSchema>).phone?.message}
+                                {
+                                  (errors as FieldErrors<SignUpSchema>).phone
+                                    ?.message
+                                }
                               </Field.ErrorText>
                             </Field.Root>
-                            <Field.Root invalid={!!(errors as unknown as SignUpSchema).address}>
+                            <Field.Root
+                              invalid={
+                                !!(errors as unknown as SignUpSchema).address
+                              }
+                            >
                               <Field.Label fontSize="md">address:</Field.Label>
                               <Input {...register("address")} name="address" />
                               <Field.ErrorText>
-                                {(errors as FieldErrors<SignUpSchema>).address?.message}
+                                {
+                                  (errors as FieldErrors<SignUpSchema>).address
+                                    ?.message
+                                }
                               </Field.ErrorText>
                             </Field.Root>
                           </>
                         )}
                       </Fieldset.Content>
-                      <Button type="submit">
-                        {authType === "signIn" ? "sign in" : "sign up"}
-                      </Button>
-                      {authType === "signIn" && (
+                      <Button type="submit">{authTypeText}</Button>
+                      {(authType === "signIn" ||
+                        authType === "signInGoogle" ||
+                        authType === "signInGitHub") && (
                         <>
                           <HStack>
-                            <Button flex="1" variant="outline">
+                            <Button
+                              onClick={() => setAuthType("signInGoogle")}
+                              flex="1"
+                              variant="outline"
+                            >
                               continue with google
                               <Icon size="sm">
                                 <FaGoogle />
                               </Icon>
                             </Button>
-                            <Button flex="1" variant="subtle">
+                            <Button
+                              onClick={() => setAuthType("signInGitHub")}
+                              flex="1"
+                              variant="subtle"
+                            >
                               continue with github
                               <Icon>
                                 <FaGithub />
