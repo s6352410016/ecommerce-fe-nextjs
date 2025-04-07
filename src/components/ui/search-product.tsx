@@ -1,6 +1,6 @@
 "use client";
 
-import { useDebounce } from "@/app/hooks/useDebounce";
+import { useDebounce } from "@/hooks/useDebounce";
 import { Input, InputGroup } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { LuSearch } from "react-icons/lu";
