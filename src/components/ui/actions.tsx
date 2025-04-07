@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import {
+  Avatar,
   Button,
   CloseButton,
   Dialog,
@@ -25,8 +26,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Axios } from "@/libs/axios";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import axios from "axios";
+import { deleteCookie, setCookie } from "@/actions/cookies";
+import { useUserContext } from "@/providers/user-provider";
+import { signOut } from "@/actions/signout";
 
 export function Actions() {
+  const { user, isLoading, refreshUser, signOut: signOutProfile } = useUserContext();
+
   const router = useRouter();
 
   const [openAuthModal, setOpenAuthModal] = useState(false);
@@ -79,6 +85,7 @@ export function Actions() {
         type: "success",
         title: "signin successfully",
       });
+      refreshUser();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toaster.create({
@@ -110,11 +117,29 @@ export function Actions() {
       case "signIn":
         setOpenAuthModal(true);
         break;
+      case "order":
+        if (!user) {
+          setOpenAuthModal(true);
+          return;
+        }
+        router.push("/order");
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleMenuSelectProfile = async (value: string) => {
+    switch (value) {
       case "profile":
         router.push("/profile");
         break;
-      case "order":
-        router.push("/order");
+      case "cart":
+        router.push("/cart");
+        break;
+      case "signOut":
+        await signOut();
+        signOutProfile();
         break;
       default:
         break;
@@ -140,6 +165,11 @@ export function Actions() {
     });
   };
 
+  const handleSocialSignInBtn = (type: "signInGoogle" | "signInGitHub") => {
+    setAuthType(type);
+    setCookie();
+  };
+
   useEffect(() => {
     handleResetSignUpFields();
 
@@ -153,6 +183,8 @@ export function Actions() {
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data.status === "success") {
+        deleteCookie();
+
         setOpenAuthModal(false);
         reset({
           email: "",
@@ -162,7 +194,10 @@ export function Actions() {
           type: "success",
           title: event.data.message,
         });
-      }else if(event.data.status === "error"){
+        refreshUser();
+      } else if (event.data.status === "error") {
+        deleteCookie();
+
         reset({
           email: "",
           password: "",
@@ -187,156 +222,191 @@ export function Actions() {
       <Icon onClick={() => router.push("/cart")} size="md">
         <LuShoppingCart className="cursor-pointer" />
       </Icon>
-      <Menu.Root onSelect={({ value }) => handleMenuSelect(value)}>
-        <Menu.Trigger asChild>
-          <Icon size="md">
-            <LuUser className="cursor-pointer" />
-          </Icon>
-        </Menu.Trigger>
-        <Portal>
-          <Menu.Positioner>
-            <Menu.Content>
-              <Menu.Item value="signIn">signin</Menu.Item>
-              <Menu.Item value="profile">profile</Menu.Item>
-              <Menu.Item value="order">order</Menu.Item>
-            </Menu.Content>
-          </Menu.Positioner>
-        </Portal>
-
-        <Dialog.Root
-          open={openAuthModal}
-          onOpenChange={({ open }) => handleCloseDialog(open)}
-          placement="center"
-          motionPreset="scale"
-        >
+      {user ? (
+        <Menu.Root onSelect={({ value }) => handleMenuSelectProfile(value)}>
+          <Avatar.Root size="sm" cursor="pointer">
+            {!user.avatar ? (
+              <Menu.Trigger asChild>
+                <Avatar.Fallback />
+              </Menu.Trigger>
+            ) : (
+              <Menu.Trigger asChild>
+                <Avatar.Image src={user.avatar} />
+              </Menu.Trigger>
+            )}
+          </Avatar.Root>
           <Portal>
-            <Dialog.Backdrop />
-            <Dialog.Positioner>
-              <Dialog.Content>
-                <Dialog.Header>
-                  <Heading textAlign="center" width="full" size="2xl">
-                    {authTypeText}
-                  </Heading>
-                </Dialog.Header>
-                <Dialog.CloseTrigger asChild>
-                  <CloseButton size="sm" />
-                </Dialog.CloseTrigger>
-                <Dialog.Body>
-                  <form onSubmit={handleSubmit(onSubmit)}>
-                    <Fieldset.Root>
-                      <Fieldset.Content>
-                        {authType === "signUp" && (
-                          <Field.Root
-                            invalid={!!(errors as unknown as SignUpSchema).name}
-                          >
-                            <Field.Label fontSize="md">name:</Field.Label>
-                            <Input {...register("name")} name="name" />
-                            <Field.ErrorText>
-                              {
-                                (errors as FieldErrors<SignUpSchema>).name
-                                  ?.message
+            <Menu.Positioner>
+              <Menu.Content>
+                <Menu.Item value="profile">profile</Menu.Item>
+                <Menu.Item value="cart">cart</Menu.Item>
+                <Menu.Item value="signOut">signout</Menu.Item>
+              </Menu.Content>
+            </Menu.Positioner>
+          </Portal>
+        </Menu.Root>
+      ) : (
+        <Menu.Root onSelect={({ value }) => handleMenuSelect(value)}>
+          <Menu.Trigger asChild>
+            <Icon size="md">
+              <LuUser className="cursor-pointer" />
+            </Icon>
+          </Menu.Trigger>
+          <Portal>
+            <Menu.Positioner>
+              <Menu.Content>
+                <Menu.Item value="signIn">signin</Menu.Item>
+                <Menu.Item value="order">order</Menu.Item>
+              </Menu.Content>
+            </Menu.Positioner>
+          </Portal>
+
+          <Dialog.Root
+            open={openAuthModal}
+            onOpenChange={({ open }) => handleCloseDialog(open)}
+            placement="center"
+            motionPreset="scale"
+          >
+            <Portal>
+              <Dialog.Backdrop />
+              <Dialog.Positioner>
+                <Dialog.Content>
+                  <Dialog.Header>
+                    <Heading textAlign="center" width="full" size="2xl">
+                      {authTypeText}
+                    </Heading>
+                  </Dialog.Header>
+                  <Dialog.CloseTrigger asChild>
+                    <CloseButton size="sm" />
+                  </Dialog.CloseTrigger>
+                  <Dialog.Body>
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                      <Fieldset.Root>
+                        <Fieldset.Content>
+                          {authType === "signUp" && (
+                            <Field.Root
+                              invalid={
+                                !!(errors as unknown as SignUpSchema).name
                               }
+                            >
+                              <Field.Label fontSize="md">name:</Field.Label>
+                              <Input {...register("name")} name="name" />
+                              <Field.ErrorText>
+                                {
+                                  (errors as FieldErrors<SignUpSchema>).name
+                                    ?.message
+                                }
+                              </Field.ErrorText>
+                            </Field.Root>
+                          )}
+                          <Field.Root invalid={!!errors.email}>
+                            <Field.Label fontSize="md">email:</Field.Label>
+                            <Input {...register("email")} name="email" />
+                            <Field.ErrorText>
+                              {errors.email?.message}
                             </Field.ErrorText>
                           </Field.Root>
-                        )}
-                        <Field.Root invalid={!!errors.email}>
-                          <Field.Label fontSize="md">email:</Field.Label>
-                          <Input {...register("email")} name="email" />
-                          <Field.ErrorText>
-                            {errors.email?.message}
-                          </Field.ErrorText>
-                        </Field.Root>
-                        <Field.Root invalid={!!errors.password}>
-                          <Field.Label fontSize="md">password:</Field.Label>
-                          <PasswordInput {...register("password")} />
-                          <Field.ErrorText>
-                            {errors.password?.message}
-                          </Field.ErrorText>
-                        </Field.Root>
-                        {authType === "signUp" && (
+                          <Field.Root invalid={!!errors.password}>
+                            <Field.Label fontSize="md">password:</Field.Label>
+                            <PasswordInput {...register("password")} />
+                            <Field.ErrorText>
+                              {errors.password?.message}
+                            </Field.ErrorText>
+                          </Field.Root>
+                          {authType === "signUp" && (
+                            <>
+                              <Field.Root
+                                invalid={
+                                  !!(errors as unknown as SignUpSchema).phone
+                                }
+                              >
+                                <Field.Label fontSize="md">phone:</Field.Label>
+                                <Input {...register("phone")} name="phone" />
+                                <Field.ErrorText>
+                                  {
+                                    (errors as FieldErrors<SignUpSchema>).phone
+                                      ?.message
+                                  }
+                                </Field.ErrorText>
+                              </Field.Root>
+                              <Field.Root
+                                invalid={
+                                  !!(errors as unknown as SignUpSchema).address
+                                }
+                              >
+                                <Field.Label fontSize="md">
+                                  address:
+                                </Field.Label>
+                                <Input
+                                  {...register("address")}
+                                  name="address"
+                                />
+                                <Field.ErrorText>
+                                  {
+                                    (errors as FieldErrors<SignUpSchema>)
+                                      .address?.message
+                                  }
+                                </Field.ErrorText>
+                              </Field.Root>
+                            </>
+                          )}
+                        </Fieldset.Content>
+                        <Button type="submit">{authTypeText}</Button>
+                        {(authType === "signIn" ||
+                          authType === "signInGoogle" ||
+                          authType === "signInGitHub") && (
                           <>
-                            <Field.Root
-                              invalid={
-                                !!(errors as unknown as SignUpSchema).phone
-                              }
-                            >
-                              <Field.Label fontSize="md">phone:</Field.Label>
-                              <Input {...register("phone")} name="phone" />
-                              <Field.ErrorText>
-                                {
-                                  (errors as FieldErrors<SignUpSchema>).phone
-                                    ?.message
+                            <HStack>
+                              <Button
+                                onClick={() =>
+                                  handleSocialSignInBtn("signInGoogle")
                                 }
-                              </Field.ErrorText>
-                            </Field.Root>
-                            <Field.Root
-                              invalid={
-                                !!(errors as unknown as SignUpSchema).address
-                              }
-                            >
-                              <Field.Label fontSize="md">address:</Field.Label>
-                              <Input {...register("address")} name="address" />
-                              <Field.ErrorText>
-                                {
-                                  (errors as FieldErrors<SignUpSchema>).address
-                                    ?.message
+                                flex="1"
+                                variant="outline"
+                              >
+                                continue with google
+                                <Icon size="sm">
+                                  <FaGoogle />
+                                </Icon>
+                              </Button>
+                              <Button
+                                onClick={() =>
+                                  handleSocialSignInBtn("signInGitHub")
                                 }
-                              </Field.ErrorText>
-                            </Field.Root>
+                                flex="1"
+                                variant="subtle"
+                              >
+                                continue with github
+                                <Icon>
+                                  <FaGithub />
+                                </Icon>
+                              </Button>
+                            </HStack>
+                            <Button
+                              onClick={() => setAuthType("signUp")}
+                              variant="plain"
+                            >
+                              don't have an account? sign up
+                            </Button>
                           </>
                         )}
-                      </Fieldset.Content>
-                      <Button type="submit">{authTypeText}</Button>
-                      {(authType === "signIn" ||
-                        authType === "signInGoogle" ||
-                        authType === "signInGitHub") && (
-                        <>
-                          <HStack>
-                            <Button
-                              onClick={() => setAuthType("signInGoogle")}
-                              flex="1"
-                              variant="outline"
-                            >
-                              continue with google
-                              <Icon size="sm">
-                                <FaGoogle />
-                              </Icon>
-                            </Button>
-                            <Button
-                              onClick={() => setAuthType("signInGitHub")}
-                              flex="1"
-                              variant="subtle"
-                            >
-                              continue with github
-                              <Icon>
-                                <FaGithub />
-                              </Icon>
-                            </Button>
-                          </HStack>
+                        {authType === "signUp" && (
                           <Button
-                            onClick={() => setAuthType("signUp")}
+                            onClick={() => setAuthType("signIn")}
                             variant="plain"
                           >
-                            don't have an account? sign up
+                            have an account? sign in
                           </Button>
-                        </>
-                      )}
-                      {authType === "signUp" && (
-                        <Button
-                          onClick={() => setAuthType("signIn")}
-                          variant="plain"
-                        >
-                          have an account? sign in
-                        </Button>
-                      )}
-                    </Fieldset.Root>
-                  </form>
-                </Dialog.Body>
-              </Dialog.Content>
-            </Dialog.Positioner>
-          </Portal>
-        </Dialog.Root>
-      </Menu.Root>
+                        )}
+                      </Fieldset.Root>
+                    </form>
+                  </Dialog.Body>
+                </Dialog.Content>
+              </Dialog.Positioner>
+            </Portal>
+          </Dialog.Root>
+        </Menu.Root>
+      )}
     </>
   );
 }

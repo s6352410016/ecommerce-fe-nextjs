@@ -6,7 +6,7 @@ import { SearchProduct } from "./search-product";
 import Link from "next/link";
 import { Actions } from "./actions";
 
-export function Header() {
+export async function Header() {
   return (
     <header className="h-full flex items-center gap-x-20">
       <ChakraLink asChild>
