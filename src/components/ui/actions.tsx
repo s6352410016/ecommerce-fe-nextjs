@@ -8,6 +8,7 @@ import {
   Dialog,
   Field,
   Fieldset,
+  Flex,
   Heading,
   HStack,
   Icon,
@@ -31,7 +32,7 @@ import { useUserContext } from "@/providers/user-provider";
 import { signOut } from "@/actions/signout";
 
 export function Actions() {
-  const { user, isLoading, refreshUser, signOut: signOutProfile } = useUserContext();
+  const { user, isLoading, refreshUser } = useUserContext();
 
   const router = useRouter();
 
@@ -139,7 +140,7 @@ export function Actions() {
         break;
       case "signOut":
         await signOut();
-        signOutProfile();
+        refreshUser();
         break;
       default:
         break;
@@ -194,6 +195,7 @@ export function Actions() {
           type: "success",
           title: event.data.message,
         });
+        
         refreshUser();
       } else if (event.data.status === "error") {
         deleteCookie();
@@ -356,13 +358,13 @@ export function Actions() {
                           authType === "signInGoogle" ||
                           authType === "signInGitHub") && (
                           <>
-                            <HStack>
+                            <Flex gap="2" className="flex-col md:flex-row">
                               <Button
                                 onClick={() =>
                                   handleSocialSignInBtn("signInGoogle")
                                 }
-                                flex="1"
                                 variant="outline"
+                                className="md:flex-1"
                               >
                                 continue with google
                                 <Icon size="sm">
@@ -373,7 +375,7 @@ export function Actions() {
                                 onClick={() =>
                                   handleSocialSignInBtn("signInGitHub")
                                 }
-                                flex="1"
+                                className="md:flex-1"
                                 variant="subtle"
                               >
                                 continue with github
@@ -381,7 +383,7 @@ export function Actions() {
                                   <FaGithub />
                                 </Icon>
                               </Button>
-                            </HStack>
+                            </Flex>
                             <Button
                               onClick={() => setAuthType("signUp")}
                               variant="plain"

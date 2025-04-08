@@ -1,12 +1,14 @@
-import { 
-  Heading, 
-  Link as ChakraLink
-} from "@chakra-ui/react";
+"use client";
+
+import { Heading, Link as ChakraLink } from "@chakra-ui/react";
 import { SearchProduct } from "./search-product";
 import Link from "next/link";
 import { Actions } from "./actions";
+import { useNavigate } from "@/hooks/use-navigate";
 
-export async function Header() {
+export function Header() {
+  const routes = useNavigate();
+
   return (
     <header className="h-full flex items-center gap-x-20">
       <ChakraLink asChild>
@@ -17,21 +19,13 @@ export async function Header() {
         </Link>
       </ChakraLink>
       <nav className="hidden lg:flex items-center gap-x-5 w-full">
-        <ChakraLink asChild>
-          <Link className="text-md" href="/">
-            Home
-          </Link>
-        </ChakraLink>
-        <ChakraLink asChild>
-          <Link className="text-md" href="/cart">
-            Cart
-          </Link>
-        </ChakraLink>
-        <ChakraLink asChild>
-          <Link className="text-md" href="/order">
-            Order
-          </Link>
-        </ChakraLink>
+        {routes.map((route) => (
+          <ChakraLink asChild key={route.title}>
+            <Link className={`text-md ${route.active ? "font-medium" : "font-normal"}`} href={route.href}>
+              {route.title}
+            </Link>
+          </ChakraLink>
+        ))}
       </nav>
       <div className="flex justify-end items-center gap-x-4 w-full">
         <SearchProduct />

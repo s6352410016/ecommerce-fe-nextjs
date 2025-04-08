@@ -13,8 +13,12 @@ export interface Profile {
 }
 
 export interface UserContextType {
-  user?: Profile;
+  user: Profile | null;
   isLoading: boolean;
   refreshUser: Function;
-  signOut: Function;
+}
+
+export interface Categories {
+  label: string;
+  value: string;
 }

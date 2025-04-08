@@ -1,20 +1,18 @@
 "use client";
 
+import { useCategories } from "@/hooks/use-categories";
 import { Portal, Select, createListCollection } from "@chakra-ui/react";
 
-const categories = createListCollection({
-  items: [
-    { label: "Clothes", value: "clothes" },
-    { label: "Shoes", value: "shoes" },
-    { label: "Bags", value: "bags" },
-
-  ],
-});
-
 export function ProductFilter() {
+  const { categories } = useCategories();
+
+  const categoriesCollection = createListCollection({
+    items: categories
+  });
+
   return (
     <div className="mt-20 flex items-center gap-x-4">
-      <Select.Root collection={categories} size="md" width="150px">
+      <Select.Root collection={categoriesCollection} size="md" width="150px">
         <Select.HiddenSelect />
         <Select.Label>Filter product</Select.Label>
         <Select.Control>
@@ -28,7 +26,7 @@ export function ProductFilter() {
         <Portal>
           <Select.Positioner>
             <Select.Content>
-              {categories.items.map((category) => (
+              {categoriesCollection.items.map((category) => (
                 <Select.Item item={category} key={category.value}>
                   {category.label}
                   <Select.ItemIndicator />
