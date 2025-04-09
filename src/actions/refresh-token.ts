@@ -1,5 +1,6 @@
 import { Axios } from "@/libs/axios";
 import axios from "axios";
+import { signOut } from "./signout";
 
 export const refreshToken = async () => {
   try{
@@ -7,6 +8,9 @@ export const refreshToken = async () => {
   }catch(error){
     if(axios.isAxiosError(error)){
       console.log(error.response?.data || "Something went wrong");
+      if(error.response?.status === 401){
+        signOut();
+      }
     }
   }
 }

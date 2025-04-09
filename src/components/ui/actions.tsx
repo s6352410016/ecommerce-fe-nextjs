@@ -10,7 +10,6 @@ import {
   Fieldset,
   Flex,
   Heading,
-  HStack,
   Icon,
   Input,
   Menu,
@@ -32,7 +31,7 @@ import { useUserContext } from "@/providers/user-provider";
 import { signOut } from "@/actions/signout";
 
 export function Actions() {
-  const { user, isLoading, refreshUser } = useUserContext();
+  const { user, refreshUser } = useUserContext();
 
   const router = useRouter();
 
@@ -87,7 +86,6 @@ export function Actions() {
         title: "signin successfully",
       });
       refreshUser();
-      router.refresh();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toaster.create({
@@ -142,7 +140,6 @@ export function Actions() {
       case "signOut":
         await signOut();
         refreshUser();
-        router.refresh();
         break;
       default:
         break;
@@ -199,7 +196,6 @@ export function Actions() {
         });
         
         refreshUser();
-        router.refresh();
       } else if (event.data.status === "error") {
         deleteCookie();
 
@@ -236,7 +232,7 @@ export function Actions() {
               </Menu.Trigger>
             ) : (
               <Menu.Trigger asChild>
-                <Avatar.Image src={user.avatar} />
+                <Avatar.Image src={user.avatar}/>
               </Menu.Trigger>
             )}
           </Avatar.Root>
