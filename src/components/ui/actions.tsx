@@ -87,6 +87,7 @@ export function Actions() {
         title: "signin successfully",
       });
       refreshUser();
+      router.refresh();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toaster.create({
@@ -141,6 +142,7 @@ export function Actions() {
       case "signOut":
         await signOut();
         refreshUser();
+        router.refresh();
         break;
       default:
         break;
@@ -197,6 +199,7 @@ export function Actions() {
         });
         
         refreshUser();
+        router.refresh();
       } else if (event.data.status === "error") {
         deleteCookie();
 
