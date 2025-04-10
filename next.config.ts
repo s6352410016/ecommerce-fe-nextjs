@@ -7,6 +7,15 @@ const nextConfig: NextConfig = {
     useCache: true,
   },
   reactStrictMode: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ecommerce-bucket-belllllx.s3.ap-southeast-1.amazonaws.com",
+        pathname: "/product/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

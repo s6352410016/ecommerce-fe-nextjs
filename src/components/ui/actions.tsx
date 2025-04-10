@@ -39,6 +39,8 @@ export function Actions() {
   const [authType, setAuthType] = useState<
     "signIn" | "signUp" | "signInGoogle" | "signInGitHub"
   >("signIn");
+  const [isPending, setIsPending] = useState(false);
+  const [isPendingOAuth, setIsPendingOAuth] = useState(false);
 
   const schema = authType === "signIn" ? SignInFields : SignUpFields;
   type SignUpSchema = z.infer<typeof SignUpFields>;
@@ -62,6 +64,7 @@ export function Actions() {
   });
 
   const onSubmit = async (fields: z.infer<typeof schema>) => {
+    setIsPending(true);
     try {
       if (authType === "signUp") {
         await Axios.post("api/auth/signup", fields);
@@ -93,10 +96,14 @@ export function Actions() {
           title: error.response?.data?.message || "Something went wrong",
         });
       }
+    } finally {
+      setIsPending(false);
     }
   };
 
   const handleSocialSignIn = (type: "google" | "github") => {
+    setIsPendingOAuth(true);
+
     const width = 500;
     const height = 600;
     const left = (screen.width - width) / 2;
@@ -196,6 +203,7 @@ export function Actions() {
         });
         
         refreshUser();
+        setIsPendingOAuth(false);
       } else if (event.data.status === "error") {
         deleteCookie();
 
@@ -207,6 +215,8 @@ export function Actions() {
           type: "error",
           title: event.data.message,
         });
+
+        setIsPendingOAuth(false);
       }
     };
 
@@ -352,7 +362,13 @@ export function Actions() {
                             </>
                           )}
                         </Fieldset.Content>
-                        <Button type="submit">{authTypeText}</Button>
+                        <Button 
+                          type="submit" 
+                          disabled={isPending || isPendingOAuth}
+                          loading={isPending}
+                        >
+                          {authTypeText}
+                        </Button>
                         {(authType === "signIn" ||
                           authType === "signInGoogle" ||
                           authType === "signInGitHub") && (
@@ -364,6 +380,7 @@ export function Actions() {
                                 }
                                 variant="outline"
                                 className="md:flex-1"
+                                disabled={isPendingOAuth || isPending}
                               >
                                 continue with google
                                 <Icon size="sm">
@@ -376,6 +393,7 @@ export function Actions() {
                                 }
                                 className="md:flex-1"
                                 variant="subtle"
+                                disabled={isPendingOAuth || isPending}
                               >
                                 continue with github
                                 <Icon>

@@ -12,7 +12,7 @@ export default function MainLayout({
         <Header />
       </div>
       <Separator />
-      <div className="max-w-[1440px] px-4 sm:px-8 md:px-16 mx-auto">
+      <div className="max-w-[1440px] h-[calc(100vh-70px)] px-4 sm:px-8 md:px-16 mx-auto">
         {children}
       </div>
     </>

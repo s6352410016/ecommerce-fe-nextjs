@@ -1,6 +1,7 @@
 "use client";
 
 import { Categories } from "@/libs/schemas";
+import { useSearchProductContext } from "@/providers/search-product-provider";
 import { Portal, Select, createListCollection } from "@chakra-ui/react";
 
 interface CategoriesProps {
@@ -8,18 +9,25 @@ interface CategoriesProps {
 }
 
 export function Category({ categories }: CategoriesProps) {
+  const { setCategory } = useSearchProductContext();
+
   const categoriesCollection = createListCollection({
-    items: categories
+    items: categories,
   });
 
   return (
-    <div className="mt-20">
-      <Select.Root collection={categoriesCollection} size="md" width="150px">
+    <div className="pt-10">
+      <Select.Root 
+        onValueChange={(e) => setCategory(e.value)}
+        collection={categoriesCollection} 
+        size="md" 
+        width="150px"
+      >
         <Select.HiddenSelect />
         <Select.Label>Filter product</Select.Label>
         <Select.Control>
           <Select.Trigger>
-            <Select.ValueText placeholder="Filter product" />
+            <Select.ValueText placeholder="default" />
           </Select.Trigger>
           <Select.IndicatorGroup>
             <Select.Indicator />

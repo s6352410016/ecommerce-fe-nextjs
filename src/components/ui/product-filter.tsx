@@ -7,6 +7,11 @@ export async function ProductFilter() {
     return null;
   }
 
+  categories.unshift({
+    label: "default",
+    value: "default",
+  });
+
   return (
     <Category categories={categories} />
   );
