@@ -4,7 +4,7 @@ import { Profile } from "@/libs/schemas";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export const useUser = () => {
+export function useUser () {
   const [user, setUser] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 

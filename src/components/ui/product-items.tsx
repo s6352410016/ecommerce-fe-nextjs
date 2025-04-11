@@ -1,8 +1,9 @@
 "use client";
 
-import { Product } from "@/libs/schemas";
-import { Button, Flex, Icon } from "@chakra-ui/react";
 import Image from "next/image";
+import { Product } from "@/libs/schemas";
+import { useCartContext } from "@/providers/cart-provider";
+import { Button, Flex, Icon } from "@chakra-ui/react";
 import { FiShoppingCart } from "react-icons/fi";
 
 interface ProductItemsProps {
@@ -10,6 +11,12 @@ interface ProductItemsProps {
 }
 
 export function ProductItems({ product }: ProductItemsProps) {
+  const { addCart } = useCartContext();
+
+  const handleAddCart = () => {
+    addCart(product);
+  };
+
   return (
     <div className="w-[300px] overflow-hidden cursor-pointer rounded">
       <Flex direction="column" height="250px">
@@ -22,7 +29,12 @@ export function ProductItems({ product }: ProductItemsProps) {
             priority
           />
         </div>
-        <Button variant="solid" borderRadius={0} borderBottomRadius="4px">
+        <Button
+          onClick={handleAddCart}
+          variant="solid"
+          borderRadius={0}
+          borderBottomRadius="4px"
+        >
           <Icon>
             <FiShoppingCart />
           </Icon>
@@ -30,7 +42,12 @@ export function ProductItems({ product }: ProductItemsProps) {
         </Button>
       </Flex>
       <p className="font-medium my-2">{product.name}</p>
-      <span className="font-medium text-amber-600">{product.price.toLocaleString("th-TH", { style: "currency", currency: "THB" })}</span>
+      <span className="font-medium text-amber-600">
+        {product.price.toLocaleString("th-TH", {
+          style: "currency",
+          currency: "THB",
+        })}
+      </span>
     </div>
   );
 }

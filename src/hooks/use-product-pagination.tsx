@@ -1,9 +1,12 @@
 import { Axios } from "@/libs/axios";
 import { ProductWithPagination } from "@/libs/schemas";
+import { useSearchProductContext } from "@/providers/search-product-provider";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export function useProductPagination(categoryName?: string[], productName?: string) {
+export function useProductPagination(productName?: string) {
+  const { category: categoryName } = useSearchProductContext();
+
   const [page, setPage] = useState(1);
   const [product, setProduct] = useState<ProductWithPagination | null>(null);
 
@@ -70,5 +73,6 @@ export function useProductPagination(categoryName?: string[], productName?: stri
   return {
     product,
     setPage,
+    getProducts,
   };
 }

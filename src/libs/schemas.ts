@@ -56,3 +56,12 @@ export interface Category {
   description: string;
   createdAt: Date;
 }
+
+export interface Cart extends Product {
+  amount?: number;
+}
+
+export interface CartContextType {
+  cart: Cart[];
+  addCart: (cart: Cart) => void;
+}

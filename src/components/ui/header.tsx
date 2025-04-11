@@ -5,13 +5,15 @@ import { SearchProduct } from "./search-product";
 import Link from "next/link";
 import { Actions } from "./actions";
 import { useNavigate } from "@/hooks/use-navigate";
+import { useSearchProductContext } from "@/providers/search-product-provider";
 
 export function Header() {
   const routes = useNavigate();
+  const { setCategory } = useSearchProductContext();
 
   return (
     <header className="h-full flex items-center gap-x-20">
-      <ChakraLink asChild>
+      <ChakraLink asChild onClick={() => setCategory(["default"])}>
         <Link href="/">
           <Heading size="2xl" fontWeight="bold">
             Exclusive

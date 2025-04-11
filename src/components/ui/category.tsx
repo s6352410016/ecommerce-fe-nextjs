@@ -9,7 +9,7 @@ interface CategoriesProps {
 }
 
 export function Category({ categories }: CategoriesProps) {
-  const { setCategory } = useSearchProductContext();
+  const { category, setCategory } = useSearchProductContext();
 
   const categoriesCollection = createListCollection({
     items: categories,
@@ -22,12 +22,13 @@ export function Category({ categories }: CategoriesProps) {
         collection={categoriesCollection} 
         size="md" 
         width="150px"
+        value={category}
       >
         <Select.HiddenSelect />
         <Select.Label>Filter product</Select.Label>
         <Select.Control>
           <Select.Trigger>
-            <Select.ValueText placeholder="default" />
+            <Select.ValueText placeholder="filter product"/>
           </Select.Trigger>
           <Select.IndicatorGroup>
             <Select.Indicator />

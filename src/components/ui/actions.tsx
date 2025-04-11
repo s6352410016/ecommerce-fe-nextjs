@@ -24,7 +24,7 @@ import { z } from "zod";
 import { SignUpFields, SignInFields } from "@/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Axios } from "@/libs/axios";
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { toaster } from "@/components/ui/toaster";
 import axios from "axios";
 import { deleteCookie, setCookie } from "@/actions/cookies";
 import { useUserContext } from "@/providers/user-provider";
@@ -229,7 +229,6 @@ export function Actions() {
 
   return (
     <>
-      <Toaster />
       <Icon onClick={() => router.push("/cart")} size="md">
         <LuShoppingCart className="cursor-pointer" />
       </Icon>

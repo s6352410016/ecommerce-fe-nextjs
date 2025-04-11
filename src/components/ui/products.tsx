@@ -1,26 +1,48 @@
 "use client";
 
-import { ButtonGroup, IconButton, Pagination } from "@chakra-ui/react";
-import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
+import {
+  ButtonGroup,
+  EmptyState,
+  IconButton,
+  Pagination,
+  VStack,
+} from "@chakra-ui/react";
+import { LuChevronLeft, LuChevronRight, LuSearchX } from "react-icons/lu";
 import { ProductItems } from "./product-items";
 import { useProductPagination } from "@/hooks/use-product-pagination";
-import { useSearchProductContext } from "@/providers/search-product-provider";
 import { useSearchParams } from "next/navigation";
 
 export function Products() {
   const searchParams = useSearchParams();
   const productName = searchParams.get("productName");
 
-  const { category: CategoryName } = useSearchProductContext();
-  const { product, setPage } = useProductPagination(CategoryName, productName ?? undefined); 
+  const { product, setPage } = useProductPagination(
+    productName ?? undefined
+  );
 
   if (product) {
     return (
       <div className="flex flex-col gap-y-8 justify-center">
         <div className="pt-10 flex flex-wrap items-center justify-center xl:justify-start gap-8">
-          {product.data.map((product) => (
-            <ProductItems product={product} key={product.id} />
-          ))}
+          {product.data.length !== 0 ? (
+            product.data.map((product) => (
+              <ProductItems product={product} key={product.id} />
+            ))
+          ) : (
+            <EmptyState.Root>
+              <EmptyState.Content>
+                <EmptyState.Indicator>
+                  <LuSearchX />
+                </EmptyState.Indicator>
+                <VStack textAlign="center">
+                  <EmptyState.Title>Products not found</EmptyState.Title>
+                  <EmptyState.Description>
+                    Explore our products
+                  </EmptyState.Description>
+                </VStack>
+              </EmptyState.Content>
+            </EmptyState.Root>
+          )}
         </div>
         <Pagination.Root
           onPageChange={(e) => setPage(e.page)}
