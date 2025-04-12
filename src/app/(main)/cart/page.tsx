@@ -1,5 +1,7 @@
+import { Cart } from "@/components/ui/cart";
+
 export default function CartPage() {
   return (
-    <div>CartPage</div>
+    <Cart />
   );
 }

@@ -14,7 +14,10 @@ export function ProductItems({ product }: ProductItemsProps) {
   const { addCart } = useCartContext();
 
   const handleAddCart = () => {
-    addCart(product);
+    addCart({
+      ...product,
+      amount: 1,
+    });
   };
 
   return (

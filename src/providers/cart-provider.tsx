@@ -6,11 +6,29 @@ import { createContext, useContext } from "react";
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export function CartProvider({ children }: { children: React.ReactNode; }){
-  const { cart, addCart } = useCart();
+export function CartProvider({ children }: { children: React.ReactNode }) {
+  const { 
+    cart, 
+    addCart, 
+    getCart, 
+    setAmount, 
+    getCartById,
+    deleteCartById,
+    deleteCart, 
+  } = useCart();
 
   return (
-    <CartContext.Provider value={{ cart, addCart }}>
+    <CartContext.Provider
+      value={{
+        cart,
+        addCart,
+        getCart,
+        setAmount,
+        getCartById,
+        deleteCartById,
+        deleteCart, 
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
@@ -18,9 +36,9 @@ export function CartProvider({ children }: { children: React.ReactNode; }){
 
 export const useCartContext = () => {
   const context = useContext(CartContext);
-  if(!context){
+  if (!context) {
     throw new Error("Cart context must used within cart provider");
   }
 
   return context;
-}
+};

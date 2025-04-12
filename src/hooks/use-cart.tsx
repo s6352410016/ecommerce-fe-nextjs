@@ -34,13 +34,79 @@ export function useCart() {
           setSuccess(false);
         });
 
+        setCart([]);
         return;
       }
 
       localStorage.setItem("cart", JSON.stringify(cart));
       setSuccess(true);
+      setCart([]);
     }
   };
+
+  const getCart = () => {
+    const cartLocalStorage = localStorage.getItem("cart");
+    if(cartLocalStorage){
+      const cartData: Cart[] = JSON.parse(cartLocalStorage);
+      return cartData
+    }
+    return [];
+  }
+
+  const setAmount = (id: number, amount: number = 1) => {
+    const cartLocalStorage = localStorage.getItem("cart");
+    if(cartLocalStorage){
+      const cartData: Cart[] = JSON.parse(cartLocalStorage);
+      const updateCart = cartData.map((cartItem) => {
+        if(cartItem.id === id){
+          return {
+            ...cartItem,
+            amount,
+          }
+        }
+        return cartItem;
+      });
+      localStorage.setItem("cart", JSON.stringify(updateCart));
+      setCart((prevCart) => {
+        return prevCart.map((cartItem) => {
+          if(cartItem.id === id){
+            return {
+              ...cartItem,
+              amount,
+            }
+          }
+          return cartItem;
+        })
+      });
+    }
+  }
+
+  const getCartById = (id: number) => {
+    const cartLocalStorage = localStorage.getItem("cart");
+    if(cartLocalStorage){
+      const cartData: Cart[] = JSON.parse(cartLocalStorage);
+      return cartData.find((cartItem) => cartItem.id === id) as Cart;
+    }
+    return null;
+  }
+
+  const deleteCartById = (id: number) => {
+    const cartLocalStorage = localStorage.getItem("cart");
+    if(cartLocalStorage){
+      const cartData: Cart[] = JSON.parse(cartLocalStorage);
+      const updateCart = cartData.filter((cartItem) => cartItem.id !== id);
+      localStorage.setItem("cart", JSON.stringify(updateCart));
+      setCart((prevCart) => prevCart.filter((cartItem) => cartItem.id !== id));
+    }
+  }
+
+  const deleteCart = () => {
+    const cartLocalStorage = localStorage.getItem("cart");
+    if(cartLocalStorage){
+      localStorage.removeItem("cart");
+      setCart([]);
+    }
+  }
 
   useEffect(() => {
     addCartToLocalStorage();
@@ -67,5 +133,10 @@ export function useCart() {
   return {
     cart,
     addCart,
+    getCart,
+    setAmount,
+    getCartById,
+    deleteCartById,
+    deleteCart,
   };
 }

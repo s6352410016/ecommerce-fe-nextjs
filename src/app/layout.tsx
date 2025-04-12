@@ -6,6 +6,8 @@ import "./globals.css";
 import { SearchProductProvider } from "@/providers/search-product-provider";
 import { CartProvider } from "@/providers/cart-provider";
 import { ToasterProvider } from "@/providers/toaster-provider";
+import { ModalActionsProvider } from "@/providers/modal-actions-provider";
+import { ModalProvider } from "@/providers/modal-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +38,10 @@ export default function RootLayout({
           <SearchProductProvider>
             <CartProvider>
               <Provider>
-                <ToasterProvider>{children}</ToasterProvider>
+                <ModalActionsProvider>
+                  <ModalProvider />
+                  <ToasterProvider>{children}</ToasterProvider>
+                </ModalActionsProvider>
               </Provider>
             </CartProvider>
           </SearchProductProvider>

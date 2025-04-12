@@ -15,7 +15,7 @@ export interface Profile {
 export interface UserContextType {
   user: Profile | null;
   isLoading: boolean;
-  refreshUser: Function;
+  refreshUser: () => Promise<void>;
 }
 
 export interface Categories {
@@ -58,10 +58,15 @@ export interface Category {
 }
 
 export interface Cart extends Product {
-  amount?: number;
+  amount: number;
 }
 
 export interface CartContextType {
   cart: Cart[];
   addCart: (cart: Cart) => void;
+  getCart: () => Cart[];
+  setAmount: (id: number, amount?: number) => void;
+  getCartById: (id: number) => Cart | null;
+  deleteCartById: (id: number) => void;
+  deleteCart: () => void;
 }

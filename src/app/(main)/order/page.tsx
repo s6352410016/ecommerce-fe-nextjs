@@ -1,5 +1,7 @@
+import { Order } from "@/components/ui/order";
+
 export default function OrderPage() {
   return (
-    <div>OrderPage</div>
+    <Order />
   );
 }
