@@ -5,6 +5,7 @@ import { Product } from "@/libs/schemas";
 import { useCartContext } from "@/providers/cart-provider";
 import { Button, Flex, Icon } from "@chakra-ui/react";
 import { FiShoppingCart } from "react-icons/fi";
+import { useRouter } from "next/navigation";
 
 interface ProductItemsProps {
   product: Product;
@@ -12,8 +13,11 @@ interface ProductItemsProps {
 
 export function ProductItems({ product }: ProductItemsProps) {
   const { addCart } = useCartContext();
+  const router = useRouter();
 
-  const handleAddCart = () => {
+  const handleAddCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+
     addCart({
       ...product,
       amount: 1,
@@ -21,7 +25,10 @@ export function ProductItems({ product }: ProductItemsProps) {
   };
 
   return (
-    <div className="w-[300px] overflow-hidden cursor-pointer rounded">
+    <div 
+      onClick={() => router.push(`/product/${product.id}`)}
+      className="w-[300px] overflow-hidden cursor-pointer rounded"
+    >
       <Flex direction="column" height="250px">
         <div className="h-full relative">
           <Image

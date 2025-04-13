@@ -18,7 +18,7 @@ export function CartItem({ cart }: { cart: Cart }) {
   const { deleteCartById } = useCartContext();
 
   return (
-    <div className="mt-10 flex items-center justify-between h-[70px] shadow-sm rounded-md px-10">
+    <div className="mt-10 flex items-center justify-between h-[70px] shadow-sm rounded-md px-2 md:px-4 lg:px-8 xl:px-10">
       <div className="flex items-center gap-x-4 relative w-[200px]">
         <div 
           onClick={() => deleteCartById(cart.id)}

@@ -1,13 +1,18 @@
 "use client";
 
 import { useUserContext } from "@/providers/user-provider";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export function Order() {
   const { user } = useUserContext();
+  const router = useRouter();
 
-  if(!user){
-    return null;
-  }
+  useEffect(() => {
+    if(!user){
+      router.back();
+    }
+  }, [user]);
 
   return (
     <div>order</div>

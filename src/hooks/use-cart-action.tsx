@@ -9,7 +9,7 @@ export function useCartAction(cart: Cart) {
 
   const addAmount = (count: number) => {
     setAmount(count);
-  }
+  };
 
   useEffect(() => {
     if (amount) {
@@ -26,5 +26,5 @@ export function useCartAction(cart: Cart) {
     amount,
     addAmount,
     totalPrice,
-  }
+  };
 }

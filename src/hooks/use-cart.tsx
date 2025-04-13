@@ -87,7 +87,6 @@ export function useCart() {
       const cartData: Cart[] = JSON.parse(cartLocalStorage);
       return cartData.find((cartItem) => cartItem.id === id) as Cart;
     }
-    return null;
   }
 
   const deleteCartById = (id: number) => {

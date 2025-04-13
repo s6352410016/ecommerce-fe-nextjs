@@ -37,7 +37,9 @@ export function Cart() {
       <Breadcrumb.Root>
         <Breadcrumb.List>
           <Breadcrumb.Item>
-            <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+            <Breadcrumb.Link asChild>
+              <Link href="/">Home</Link>
+            </Breadcrumb.Link>
           </Breadcrumb.Item>
           <Breadcrumb.Separator>
             <LiaSlashSolid />
@@ -115,7 +117,9 @@ export function Cart() {
             <p>free</p>
           </Flex>
           <Separator />
-          <Button variant="solid" marginLeft="auto" marginTop="3">Check out</Button>
+          <Button variant="solid" marginLeft="auto" marginTop="3">
+            Check out
+          </Button>
         </div>
       </Flex>
     </div>

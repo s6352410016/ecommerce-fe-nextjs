@@ -66,7 +66,7 @@ export interface CartContextType {
   addCart: (cart: Cart) => void;
   getCart: () => Cart[];
   setAmount: (id: number, amount?: number) => void;
-  getCartById: (id: number) => Cart | null;
+  getCartById: (id: number) => Cart | undefined;
   deleteCartById: (id: number) => void;
   deleteCart: () => void;
 }
