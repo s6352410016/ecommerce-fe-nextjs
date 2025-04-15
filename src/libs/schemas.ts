@@ -32,6 +32,8 @@ export interface Product {
   category: Category;
   images: ProductImage[];
   createdAt: Date;
+  stripeProductId: string;
+  stripePriceId: string;
 }
 
 export interface ProductWithPagination {
