@@ -12,7 +12,7 @@ export function Order() {
     if(!user){
       router.back();
     }
-  }, [user]);
+  }, [user, router]);
 
   return (
     <div>order</div>
