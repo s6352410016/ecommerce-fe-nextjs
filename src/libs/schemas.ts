@@ -72,3 +72,45 @@ export interface CartContextType {
   deleteCartById: (id: number) => void;
   deleteCart: () => void;
 }
+
+export interface Order extends Product {
+  quantity: number;
+}
+
+export enum OrderStatus {
+  PAID = "paid",
+  UNPAID = "unpaid",
+  OPEN = "open",
+}
+
+export interface OrderRes {
+  id: string;
+  user: Profile;
+  totalAmount: number;
+  orderStatus: OrderStatus;
+  shippingAddress: string;
+  phone: string;
+  email: string;
+  orders: OrderDetails[];
+  sessionId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  clientSecret: string;
+}
+
+interface OrderDetails {
+  id: number;
+  product: Product;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ShippingInfo {
+  userId: number;
+  shippingAddress: string;
+  phone: string;
+  email: string;
+}

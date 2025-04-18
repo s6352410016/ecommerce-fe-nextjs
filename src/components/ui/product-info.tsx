@@ -1,8 +1,7 @@
 "use client";
 
-import { setCookie } from "@/actions/cookies";
-import { Axios } from "@/libs/axios";
-import { Product } from "@/libs/schemas";
+import { useOrderAction } from "@/hooks/use-order-action";
+import { Order, Product } from "@/libs/schemas";
 import { useModalActionsContext } from "@/providers/modal-actions-provider";
 import { useUserContext } from "@/providers/user-provider";
 import {
@@ -16,54 +15,51 @@ import {
   Separator,
   Text,
 } from "@chakra-ui/react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LuMinus, LuPlus } from "react-icons/lu";
 import { SlRefresh } from "react-icons/sl";
 import { TbTruckDelivery } from "react-icons/tb";
+import { toaster } from "./toaster";
+import { setCookie } from "@/actions/cookies";
 
 interface ProductInfoProps {
   product?: Product;
 }
 
-export default function ProductInfo({
-  product,
-}: ProductInfoProps) {
+export default function ProductInfo({ product }: ProductInfoProps) {
   const { user } = useUserContext();
   const { setOpenAuthModal } = useModalActionsContext();
 
+  const { saveOrders } = useOrderAction();
+
   const router = useRouter();
   const [amount, setAmount] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleCheckout = async () => {
-    try {
-      if(!user){
-        setOpenAuthModal(true);
+    if (!user) {
+      setOpenAuthModal(true);
+      return;
+    }
+
+    if (product) {
+      const productOrder: Order = {
+        ...product,
+        quantity: amount,
+      };
+      const success = saveOrders(productOrder);
+      if (!success) {
+        toaster.create({
+          description: "you cannot add product already exist in your order",
+          type: "error",
+        });
         return;
       }
-
-      setCookie();
-
-      if(product){
-        setIsLoading(true);
-        const { data } = await Axios.post<{url: string}>(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/stripe/checkout-session`, {
-          price: product.stripePriceId,
-          quantity: amount,
-        });
-
-        setAmount(1);
-        router.push(data.url);
-      }
-    } catch (error) {
-      if(axios.isAxiosError(error)){
-        console.log(error.response?.data || "Something went wrong");
-      }
-    } finally {
-      setIsLoading(false);
+      
+      await setCookie();
+      router.push("/create-order");
     }
-  }
+  };
 
   return (
     <Flex flexDirection="column" gapY="5">
@@ -103,11 +99,7 @@ export default function ProductInfo({
             </NumberInput.IncrementTrigger>
           </HStack>
         </NumberInput.Root>
-        <Button 
-          onClick={handleCheckout}
-          disabled={isLoading}
-          variant="solid"
-        >
+        <Button onClick={handleCheckout} variant="solid">
           Buy now
         </Button>
       </Flex>

@@ -18,9 +18,11 @@ import { useMemo, useState } from "react";
 import { useUserContext } from "@/providers/user-provider";
 import { useModalActionsContext } from "@/providers/modal-actions-provider";
 import axios from "axios";
-import { Axios } from "@/libs/axios";
 import { useRouter } from "next/navigation";
 import { setCookie, setCookieCart } from "@/actions/cookies";
+import { toaster } from "./toaster";
+import { useOrderAction } from "@/hooks/use-order-action";
+import { Order } from "@/libs/schemas";
 
 export function Cart() {
   const router = useRouter();
@@ -30,6 +32,8 @@ export function Cart() {
 
   const { getCart, deleteCart } = useCartContext();
   const cart = getCart();
+
+  const { saveOrders } = useOrderAction();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -57,16 +61,20 @@ export function Cart() {
         await setCookieCart();
         setIsLoading(true);
 
-        const body = cart.map((cartItem) => ({
-          price: cartItem.stripePriceId,
+        const productOrders: Order[] = cart.map((cartItem) => ({
+          ...cartItem,
           quantity: cartItem.amount,
         }));
-        const { data } = await Axios.post<{ url: string }>(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/stripe/checkout-session`,
-          body
-        );
+        const success = saveOrders(productOrders);
+        if (!success) {
+          toaster.create({
+            description: "you cannot add product already exist in your order",
+            type: "error",
+          });
+          return;
+        }
 
-        router.push(data.url);
+        router.push("/create-order");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -162,11 +170,11 @@ export function Cart() {
             <p>free</p>
           </Flex>
           <Separator />
-          <Button 
+          <Button
             onClick={handleCheckOut}
             disabled={isLoading}
-            variant="solid" 
-            marginLeft="auto" 
+            variant="solid"
+            marginLeft="auto"
             marginTop="3"
           >
             Check out
