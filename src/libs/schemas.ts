@@ -98,7 +98,7 @@ export interface OrderRes {
   clientSecret: string;
 }
 
-interface OrderDetails {
+export interface OrderDetails {
   id: number;
   product: Product;
   quantity: number;

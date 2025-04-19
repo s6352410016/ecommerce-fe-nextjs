@@ -99,7 +99,11 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             </NumberInput.IncrementTrigger>
           </HStack>
         </NumberInput.Root>
-        <Button onClick={handleCheckout} variant="solid">
+        <Button 
+          disabled={!product?.stockQuantity}
+          onClick={handleCheckout} 
+          variant="solid"
+        >
           Buy now
         </Button>
       </Flex>

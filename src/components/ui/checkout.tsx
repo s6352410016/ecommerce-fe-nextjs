@@ -1,55 +1,58 @@
 "use client";
 
-import { deleteCookie, deleteCookieCart, getCookieCart } from "@/actions/cookies";
+import {
+  deleteCookie,
+  deleteCookieCart,
+  getCookieCart,
+} from "@/actions/cookies";
+import useOrderStatus from "@/hooks/use-order-status";
 import { useCartContext } from "@/providers/cart-provider";
 import { Button, Flex, Heading, Icon } from "@chakra-ui/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { CiCircleCheck } from "react-icons/ci";
 import { FaRegCircleXmark } from "react-icons/fa6";
 
 export function CheckOut() {
   const { deleteCart } = useCartContext();
-
-  const searchParams = useSearchParams();
-  const success = searchParams.get("success");
+  const { status } = useOrderStatus();
 
   const router = useRouter();
 
   const handleButtunClick = async () => {
     await deleteCookieCart();
 
-    if(success === "true"){
-      // TODO: create order api
+    if (status === "PAID") {
+      localStorage.removeItem("orderId");
       router.push("/order");
       return;
     }
 
     router.push("/");
-  }
+  };
 
   const handleDeleteCookie = async () => {
     await deleteCookie();
     const shouldDeleteCart = await getCookieCart();
-    if(shouldDeleteCart){
+    if (shouldDeleteCart) {
       deleteCart();
     }
-  }
+  };
 
   useEffect(() => {
     handleDeleteCookie();
   }, []);
 
-  return (
-    <Flex
-      minH="vh"
-      w="full"
-      justifyContent="center"
-      alignItems="center"
-      flexDirection="column"
-      gapY="4"
-    >
-      {success === "true" ? (
+  if (status === "PAID") {
+    return (
+      <Flex
+        minH="vh"
+        w="full"
+        justifyContent="center"
+        alignItems="center"
+        flexDirection="column"
+        gapY="4"
+      >
         <>
           <Icon size="inherit" color="green.400">
             <CiCircleCheck size={100} />
@@ -57,14 +60,24 @@ export function CheckOut() {
           <Heading size="3xl" color="gray.700">
             Thank you for your order
           </Heading>
-          <Button 
-            onClick={handleButtunClick}
-            variant="solid" 
-            mt="3"
-          >Go to your order
+          <Button onClick={handleButtunClick} variant="solid" mt="3">
+            Go to your order
           </Button>
         </>
-      ) : (
+      </Flex>
+    );
+  }
+
+  if(status === "UNPAID"){
+    return (
+      <Flex
+        minH="vh"
+        w="full"
+        justifyContent="center"
+        alignItems="center"
+        flexDirection="column"
+        gapY="4"
+      >
         <>
           <Icon size="inherit" color="red.500">
             <FaRegCircleXmark size={80} />
@@ -72,16 +85,16 @@ export function CheckOut() {
           <Heading size="3xl" color="gray.700">
             Checkout failed
           </Heading>
-          <Button 
+          <Button
             onClick={handleButtunClick}
-            variant="solid" 
-            mt="3" 
+            variant="solid"
+            mt="3"
             colorPalette="red"
           >
             Back to shop
           </Button>
         </>
-      )}
-    </Flex>
-  );
+      </Flex>
+    );
+  }
 }

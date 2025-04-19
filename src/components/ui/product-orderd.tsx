@@ -8,7 +8,7 @@ interface ProductOrderedProps {
 
 export function ProductOrdered({ order }: ProductOrderedProps) {
   return (
-    <Flex alignItems="center" justify="space-between" w="sm">
+    <Flex alignItems="center" justify="space-between">
       <Flex gapX="3" alignItems="center">
         <div className="w-[50px] h-[50px] relative overflow-hidden rounded">
           <Image

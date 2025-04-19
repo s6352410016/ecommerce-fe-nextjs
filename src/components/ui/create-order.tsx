@@ -77,14 +77,18 @@ export function CreateOrder() {
 
   const fetchClientSecret = useCallback(async () => {
     if (shippignInfo) {
-      const clientSecret = await createOrder(orders, shippignInfo);
-      reset({
-        shippingAddress: "",
-        phone: "",
-        email: "",
-      });
-      deleteOrders();
-      return clientSecret;
+      const data = await createOrder(orders, shippignInfo);
+      if(data && data.clientSecret){
+        localStorage.setItem("orderId", data.id);
+        reset({
+          shippingAddress: "",
+          phone: "",
+          email: "",
+        });
+        deleteOrders();
+        return data.clientSecret;
+      }
+      return "";
     }
     return "";
   }, [orders, shippignInfo]);
@@ -118,7 +122,7 @@ export function CreateOrder() {
           <Heading size="3xl" mt="10">
             Billing Details
           </Heading>
-          <Flex justify="space-between" mt="10">
+          <Flex flexDirection="column" gapY="5" gapX="5" justify="space-between" mt="10" lg={{flexDirection: "row"}}>
             <form onSubmit={handleSubmit(handleCheckOut)} className="w-full">
               <Fieldset.Root size="lg" maxW="md">
                 <Fieldset.Content>
@@ -156,7 +160,7 @@ export function CreateOrder() {
               </Fieldset.Root>
             </form>
 
-            <Flex direction="column" gapY="4">
+            <Flex direction="column" gapY="4" w="full">
               {orders.length !== 0 &&
                 orders.map((order) => (
                   <ProductOrdered order={order} key={order.id} />

@@ -30,13 +30,13 @@ export const createOrder = async (
       }
     );
 
-    return data.clientSecret;
+    return data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log(error.response?.data || "Something went wrong");
-      return "";
+      return null;
     }
 
-    return "";
+    return null;
   }
 };
