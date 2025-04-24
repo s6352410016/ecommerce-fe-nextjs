@@ -27,17 +27,19 @@ export function ProductImages({ productImages }: ProductImagesProps) {
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               priority
+              className="object-cover object-center"
             />
           </div>
         ))}
       </Flex>
-      <div className="w-[500px] h-[600px] relative rounded overflow-hidden">
+      <div className="hidden md:flex w-[500px] h-[600px] relative rounded overflow-hidden">
         <Image
           src={`${process.env.NEXT_PUBLIC_AWS_BUCKET_NAME}/${process.env.NEXT_PUBLIC_AWS_BUCKET_FOLDER}/${showProductImage}`}
           alt={(productImages)?.[0].imageUrl || "productImage"}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority
+          className="object-cover object-center"
         />
       </div>
     </Flex>

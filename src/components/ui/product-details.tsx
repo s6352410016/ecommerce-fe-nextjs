@@ -25,7 +25,7 @@ export function ProductDetails({ product }: { product?: Product }) {
           </Breadcrumb.Item>
         </Breadcrumb.List>
       </Breadcrumb.Root>
-      <div className="mt-10 flex flex-col lg:flex-row gap-x-10">
+      <div className="mt-10 flex flex-col items-center lg:flex-row gap-x-10 gap-y-4">
         <ProductImages productImages={product?.images} />
         <ProductInfo product={product} />
       </div>

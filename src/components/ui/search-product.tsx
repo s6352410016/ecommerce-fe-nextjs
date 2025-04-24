@@ -14,9 +14,7 @@ export function SearchProduct() {
   const debounceValue = useDebounce<string>(query, 500);
 
   useEffect(() => {
-    if(debounceValue){
-      router.push(`/?productName=${debounceValue}`);
-    }
+    router.push(`/?productName=${debounceValue}`);
   }, [debounceValue]);
 
   return (

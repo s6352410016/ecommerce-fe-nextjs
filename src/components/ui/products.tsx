@@ -16,15 +16,13 @@ export function Products() {
   const searchParams = useSearchParams();
   const productName = searchParams.get("productName");
 
-  const { product, setPage } = useProductPagination(
-    productName ?? undefined
-  );
+  const { product, setPage } = useProductPagination(productName);
 
   if (product) {
     return (
       <div className="flex flex-col gap-y-8 justify-center">
         <div className="pt-10 flex flex-wrap items-center justify-center xl:justify-start gap-8">
-          {product.data.length !== 0 ? (
+          {product.data.length > 0 ? (
             product.data.map((product) => (
               <ProductItems product={product} key={product.id} />
             ))

@@ -37,6 +37,7 @@ export function ProductItems({ product }: ProductItemsProps) {
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority
+            className="object-cover object-center"
           />
         </div>
         <Button

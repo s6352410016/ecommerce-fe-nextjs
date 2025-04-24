@@ -32,9 +32,6 @@ export function Actions() {
 
   const handleMenuSelectProfile = async (value: string) => {
     switch (value) {
-      case "profile":
-        router.push("/profile");
-        break;
       case "cart":
         router.push("/cart");
         break;
@@ -68,7 +65,6 @@ export function Actions() {
           <Portal>
             <Menu.Positioner>
               <Menu.Content>
-                <Menu.Item value="profile">profile</Menu.Item>
                 <Menu.Item value="cart">cart</Menu.Item>
                 <Menu.Item value="signOut">signout</Menu.Item>
               </Menu.Content>

@@ -4,17 +4,19 @@ import { useSearchProductContext } from "@/providers/search-product-provider";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export function useProductPagination(productName?: string) {
+export function useProductPagination(productName?: string | null) {
   const { category: categoryName } = useSearchProductContext();
 
   const [page, setPage] = useState(1);
   const [product, setProduct] = useState<ProductWithPagination | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getProducts = async () => {
     try {
+      setIsLoading(true);
       if (!categoryName?.length && !productName) {
         const { data } = await Axios.get<ProductWithPagination>(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/product/find?page=${page}`
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/product/find?page=${page}`,
         );
         setProduct(data);
         return;
@@ -63,6 +65,8 @@ export function useProductPagination(productName?: string) {
       if (axios.isAxiosError(error)) {
         console.log(error.response?.data || "Something went wrong");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -72,6 +76,7 @@ export function useProductPagination(productName?: string) {
 
   return {
     product,
+    isLoading,
     setPage,
     getProducts,
   };
