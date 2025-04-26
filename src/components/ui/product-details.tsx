@@ -7,7 +7,7 @@ import { ProductImages } from "./product-images";
 import ProductInfo from "./product-info";
 import Link from "next/link";
 
-export function ProductDetails({ product }: { product?: Product }) {
+export function ProductDetails({ product }: { product: Product }) {
   return (
     <div className="mt-10">
       <Breadcrumb.Root>
@@ -26,7 +26,7 @@ export function ProductDetails({ product }: { product?: Product }) {
         </Breadcrumb.List>
       </Breadcrumb.Root>
       <div className="mt-10 flex flex-col items-center lg:flex-row gap-x-10 gap-y-4">
-        <ProductImages productImages={product?.images} />
+        <ProductImages productImages={product.images} />
         <ProductInfo product={product} />
       </div>
     </div>

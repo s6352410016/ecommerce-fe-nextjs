@@ -24,7 +24,7 @@ import { toaster } from "./toaster";
 import { setCookie } from "@/actions/cookies";
 
 interface ProductInfoProps {
-  product?: Product;
+  product: Product;
 }
 
 export default function ProductInfo({ product }: ProductInfoProps) {
@@ -63,14 +63,14 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
   return (
     <Flex flexDirection="column" gapY="5">
-      <Heading size="2xl">{product?.name}</Heading>
+      <Heading size="2xl">{product.name}</Heading>
       <Text textStyle="xl">
         {product?.price.toLocaleString("th-TH", {
           style: "currency",
           currency: "THB",
         })}
       </Text>
-      <Text textStyle="sm">{product?.description}</Text>
+      <Text textStyle="sm">{product.description}</Text>
       <Separator />
       <Flex gapX="4">
         <NumberInput.Root
@@ -79,7 +79,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           unstyled
           spinOnPress={false}
           min={1}
-          max={product?.stockQuantity}
+          max={product.stockQuantity}
         >
           <HStack gap="2">
             <NumberInput.DecrementTrigger asChild>

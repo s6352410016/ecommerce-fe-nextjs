@@ -9,6 +9,9 @@ export const getProductId = async (id: number) => {
   }catch(error){
     if(axios.isAxiosError(error)){
       console.log(error.response?.data || "Something went wrong");
+      return null;
     }
+
+    return null;
   }
 }

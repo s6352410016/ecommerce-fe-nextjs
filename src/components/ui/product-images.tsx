@@ -6,11 +6,11 @@ import Image from "next/image";
 import { useState } from "react";
 
 interface ProductImagesProps {
-  productImages?: ProductImage[];
+  productImages: ProductImage[];
 }
 
 export function ProductImages({ productImages }: ProductImagesProps) {
-  const [showProductImage, setShowProductImage] = useState(productImages?.[0].imageUrl);
+  const [showProductImage, setShowProductImage] = useState(productImages[0].imageUrl);
 
   return (
     <Flex gapX="8">
@@ -35,7 +35,7 @@ export function ProductImages({ productImages }: ProductImagesProps) {
       <div className="hidden md:flex w-[500px] h-[600px] relative rounded overflow-hidden">
         <Image
           src={`${process.env.NEXT_PUBLIC_AWS_BUCKET_NAME}/${process.env.NEXT_PUBLIC_AWS_BUCKET_FOLDER}/${showProductImage}`}
-          alt={(productImages)?.[0].imageUrl || "productImage"}
+          alt={productImages[0].imageUrl || "productImage"}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority
